@@ -47,25 +47,25 @@ public class ScoreDbAdapter {
 		ContentValues rowValues = getContentValuesFromScore(s);
 		mDb.insert(TABLE_NAME, null, rowValues);
 		
-		Cursor c = mDb.query(TABLE_NAME, new String[] {ID_KEY, NAME_KEY, SCORE_KEY}, 
+		Cursor c = mDb.query(TABLE_NAME, new String[] { ID_KEY, NAME_KEY, SCORE_KEY },
 				null, null, null, null, ID_KEY + " DESC", "1");
 		c.moveToFirst();
 		return getScoreFromCursor(c);
 	}
 	
 	public void removeScore(Score s) {
-		mDb.delete(TABLE_NAME, ID_KEY + " = ?", new String[] {Integer.toString(s.getID())});
+		mDb.delete(TABLE_NAME, ID_KEY + " = ?", new String[] { Integer.toString(s.getID()) });
 	}
 	
-
 	public Collection<? extends Score> getAllScores() {
 		ArrayList<Score> scoreList = new ArrayList<Score>();
-		Cursor c = mDb.query(TABLE_NAME, new String[] {ID_KEY, NAME_KEY, SCORE_KEY},
+		Cursor c = mDb.query(TABLE_NAME, new String[] { ID_KEY, NAME_KEY, SCORE_KEY },
 				null, null, null, null, ID_KEY + " DESC");
-		c.moveToFirst();
-		do {
-			scoreList.add(getScoreFromCursor(c));
-		} while (c.moveToNext());
+		if (c.moveToFirst()) {
+			do {
+				scoreList.add(getScoreFromCursor(c));
+			} while (c.moveToNext());
+		}
 		return scoreList;
 	}
 	
@@ -78,7 +78,7 @@ public class ScoreDbAdapter {
 	}
 	
 	private static class ScoreDbHelper extends SQLiteOpenHelper {
-
+		
 		private static String CREATE_STATEMENT;
 		private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
 		
@@ -99,17 +99,17 @@ public class ScoreDbAdapter {
 		public ScoreDbHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
-
+		
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(CREATE_STATEMENT);
 		}
-
+		
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			db.execSQL(DROP_STATEMENT);
 			onCreate(db);
 		}
 		
-	}	
+	}
 }
